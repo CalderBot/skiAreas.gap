@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+	    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<title>Ski Resort Awesomeness</title>
+		<!-- <link rel="stylesheet" href="css/index.css"> -->
+		<link rel="stylesheet" href="css/main.css">
+	</head>
+	<body>
+		<header>
+			<span class="header-text">Show me the</span>
+			<label class="dropdown inline">
+		        <span class="left js-dropdown-val">Most awesome</span>
+				<svg width="8" height="7" class="icon-dropdown">
+		    		<polygon points="0, 2 8, 2 4, 7" class="white"></polygon>
+		    	</svg>
+		    	<select class="sortby">
+					<option value="awesome" data-adjective="Most awesome">Most Awesome</option>
+					<option value="snowfall" data-adjective="Snowiest">Snowiest</option>
+					<option value="difficult" data-adjective="Most difficult">Most Difficult</option>
+					<option value="skiable acres" data-adjective="Largest">Largest</option>
+				</select>
+		    </label>
+			<span class="header-text">ski areas in</span>
+			<span class="header-text small-screens-only">in</span>
+
+			<label class="dropdown inline">
+				<span class="left js-dropdown-val">California</span>
+				<svg width="8" height="7" class="icon-dropdown">
+		    		<polygon points="0, 2 8, 2 4, 7" class="white"></polygon>
+		    	</svg>
+				<select class="state-select">
+					<!-- JQuery adds every state here that has ski areas -->
+				</select>
+			</label>
+			<button class="huh">?</button>
+		</header>
+	<!-- 	<div class="key"></div>
+		<label class="key-label">most <var>awesome</var></label>
+		<label class="key-label right">least <var>awesome</var></label>
+ -->
+		<!-- <script src="js/index.js"></script> -->
+		<script src="http://cdnjs.cloudflare.com/ajax/libs/gsap/latest/TweenMax.min.js"/></script>
+		<script src="phonegap.js"></script>
+		<script src="js/libs.js"></script>
+		<script src="js/skiAreaList.js"></script>
+		<script src="js/main.js"></script>
+	</body>
+</html>

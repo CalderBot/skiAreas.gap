@@ -1,0 +1,105 @@
+// -------------- CHANGELOG -------------------------
+September 6th
+1. Updated text... I think its in fairly good shape now.  Added .svg{padding-left:30px} to avoid words getting cut off.
+2. Changed d.top-d.base to d.vertical since every mounntain with top-base has vert but not the other way.
+3.  
+
+September 5th
+1. Current time in the selected state sets the background gradient colors. RAD!!
+
+September 4th
+1. Arctan formula works!
+	-- A problem: mountain titles can now overlap and go off the screen
+	-- Possible solution: Make text run up left side of mountain, and affix start of text to bottom of screen
+		 (Still may not work perfectly on screens with super-low height, and overlapping is still an issue.)
+	-- Math is a little bit off, since steepness currently affects distance of text from the mountain
+2. Window resize re-renders svg RAD!!
+3. Random opacity snow RAD!!
+
+September 3rd
+1. Began work on moving ski area names
+2. New key/legend at top
+3. Responsive non-wrapping header
+4. Fixed a bug that caused states with 2-word names to not load by changing the way loadStates() works and removing the array of state names, (side benefit: states without ski areas won't show up at all) but...
+--FIXED-- 5. Introduced a bug (see line 20 in main.js) where the states won't alphabetize
+
+August 30th
+1. Added all states to drop down with jquery
+2. Fixed snow placement and added a parameter SNOWBANDWIDTH that controls how wide the band of snow is relative to the mountain width.
+3. Introduced a bug: the first time a state is selected it gives the "empty list" alert, but then it never does after that.  I am confused by this, because by definition I only add states to the drop down that have some ski areas.
+
+August 29th
+1. Added header (Google says 44px is iPhone-standard header height)
+2. Can select states now (no "all" option yet)
+3. Use adjectives in dropdowns, but nouns on labels.
+	- eg. "Snowiest ski resorts..." in the dropdown 
+				"Most snowfall ... Least snowfall" in the labels
+
+August 28th
+1. Improved the ski area list.
+2. Ski Area names are now the colloqial name, like "Squaw Valley" instead of "Squaw Valley Ski Resort"
+3. Set the names to shift downwards by ~ windowheight/data.length
+4. Didn't master the phonegap yet.
+
+August 26th, Sebastian:
+1. Removed huge snow to make snow begin to fall sooner ... :(
+2. Put javascript files in /js/ and css+fonts in /style/
+3. Put jQuery & D3 in libs.js
+4. Offlined Google webfonts
+5. Renamed files so landing page could be index.
+6. Added sortby functionality
+
+August 26th, Calder:
+1. Commented out the console.log's in "DISPLAY SKI AREA INFO (on hover)" section of index.html
+2. Compiled the jade files to html (this is required for phonegap) (Note: phonegap also requires the startup page to be index.html)
+3. Made a list of ski areas, and a list of states... these are global variables saved in skiAreaList
+4. Added helper functions for filtering skiAreaList by state.
+
+
+
+
+
+// ----------------- TODO -----------------------
+* Make a 170x200 'logo.png', a 57x57 'icon-57.png', a 114x114 'icon-57-2x.png', a a 72x72 'icon-72.png', a 144x144 'icon-72-2x.png'
+* Put logo.png in skiAreas/www/img, put the others in skiAreas/res/icon/ios 
+* http://docs.phonegap.com/en/2.9.0/cordova_events_events.md.html#Events = add handles for pause, resign, resume, call
+* Understand why computer seems to work harder and harder as time goes on.
+* Come up with three names each for the app
+	- And if possible, make the name something that could be used in .header-text (instead of "ski resorts in"). It would be cool if it played nicely with that, so it would kind of work as a functional title.
+* Phonegap it.
+* "Least skiable acres" should read "Fewest skiable acres" but the current method using <var> doesn't make that change easy.
+
+
+
+// ----------------- TODO/IDEAS (things that can be done after launch) -----------------------
+* Add helper text in modal to explain what "Awesomeness" means and why some ski areas may be missing
+	- A landing page for the app could also do this
+* Hover-stats functionality (it's an excellent idea!)
+* Option to view top ski areas in USA for any given sortby (instead of confining to one state at a time)
+	- Limit results to top 20? 30? ski areas
+* Allow users to submit missing data (downsides: would require a bit of manual work and internet connection)
+* (And, some SVG clouds could roll in, based on weather.org data. Ski areas with terrain parks could have animated snowboarders jumping about, and current daily snowfall from online snow reports could set an amount of snow on the mountain itself.)
+
+// ----------------- DONE -----------------------
+* read entire PhoneGap doc from docs.phonegap.com
+* Make snowfall gaussian (Actually I made it approximately Gaussian)
+* put in formula A = triangle width/2, O = triangle height, angle to rotate is -atan(O/A) 
+* Alphabetize state list
+* Fix minor problem: when page first loads, Claifornia is displayed, but option:"California" is not selected.  This causes some problems.
+* Maybe make the y-distance from mountain base to the black header correspond to 4500 ft. (That is slightly more than the most vertical of any mountain.)  As it stands, some mountains go off the top of the screen.
+* Currently, snow only falls on the left half of the mountain.
+* Maybe: Scale everything down. (At iPhone-like heights, mountain names end up below the viewport.)
+* "Least Awesome is at right of window, should be at rght of doc or body or something... and what about that line?"
+* Left side of left-most mountain is cut off.
+* What if the background was the color of the current time zone in the selected state? So, at 6pm in California it would be sunset colored, and gradually get darker and darker until sunrise.
+* Fix snowfall drop x-coordinate. (Most evident on states like NV).
+* (Maybe) populate states dropdown menu programmatically. If not, I just need to fill in each state that has ski areas by hand.
+* Drop-down menu to select state (should this just be in a corner of the main page, or should it be on a separate landing page that explains the app and stuff?)
+* Replace cdn scripts with minified files so that the app works 100% offline.
+* Three names: "Rank my ski area" "Rank my mountain" "All Ski Resorts"... these names are boring but maybe likely to show up in app store searches.  I'm gonna keep thinking.
+		Seb: Random brainstorm for ideas... But I'll keep thinking too.
+			- Ski ReSort (get it?)
+			- SuperSexySkiSlopeSorter
+			- iSki
+			- SkiFall
+			- 
