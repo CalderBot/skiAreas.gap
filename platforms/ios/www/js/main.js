@@ -81,6 +81,15 @@ function isComplete(area) {
 	return ( area.state && area.vertical && area.skiableAcres );
 }
 
+function describe(a){
+	var str = "vert:"+a.vertical+'ft  ';
+	if(a.top) str += "top:"+a.top+'ft  ';
+	if(a.yearlySnowfall) str += "snow:"+a.yearlySnowfall+'in  '
+	if(a.advanced || a.expert) str += "advanced+:"+(a.advanced+a.expert)+'%  '
+	str += "acres:"+a.skiableAcres;
+	return str;
+}
+
 // Main rendering function
 function render(sortby, state) {
 
@@ -92,7 +101,7 @@ function render(sortby, state) {
 	var sortby = sortby || 'awesome';
 
 	// get window height so SVG is full-height
-	var WINDOWHEIGHT = parseInt(window.outerHeight);
+	var WINDOWHEIGHT = parseInt(window.innerHeight);
 
 	// Cut out ski ares that don't have enough info for meaningful visualization
 	var data = skiAreaList.filter(isComplete)
@@ -110,11 +119,6 @@ function render(sortby, state) {
 
 	var SNOWCONSTANT = 0.1;
 
-	// make an array with a certain length to use as snowfall data
-	//  ... new Array(3) would make [,,]
-	//  ... scale by reducing snow values by lowestSnow to normalize
-	//  ... include width (2 * acres / top - bottom) to increase density over wide mountains
-	//  ... SNOWCONSTANT keeps number manageable
 	var makeSnowFall = (function() {
 		for (var i=0; i<data.length; i++) {
 			data[i].snowfall = new Array(
@@ -124,6 +128,10 @@ function render(sortby, state) {
 			)
 		}
 	})();
+	
+	function snowflakes(area){
+
+	}
 
 	// awesomeness constants
 	var SNOWFALLSCALE = 10
@@ -137,11 +145,11 @@ function render(sortby, state) {
 	var SVG_HEIGHT = WINDOWHEIGHT
 	var AWESOMESCALE = 500
 	var XSCALE = 200
+	var WIDTHSCALE = 200
 	var SVG_WIDTH = XSCALE * data.length + 100
 	var YHEIGHT = SVG_HEIGHT
 	var HEADERHEIGHT = 44
 	var HEIGHTSCALE = (YHEIGHT - HEADERHEIGHT) / 4500
-	var WIDTHSCALE = 200
 	var SNOWBANDWIDTH = 1.5 // how wide the band of snow is on each mountain
 
 	// FUNCTION TO DETERMINE HOW AWESOME EACH MOUNTAIN IS
@@ -214,45 +222,32 @@ function render(sortby, state) {
 				return [item.x,item.y].join(',');
 			}).join(' ');
 		})
-		// fill each mountain with color
-		// ... more blue = more advanced
-		// ... more green = more easy
-		// ... 70% opacity
 		.attr('fill', function(d) {
 			return 'rgba(0, ' + Math.round( (100 - (d.advanced + d.expert)) * 2.55) + ',' + Math.round((d.advanced + d.expert) * 2.55) + ' , .8)'
-			// ---- COLOR EXPERIMENT ----
-			// return 'hsla(' + ((Math.round(d.advanced + d.expert)) * 1.5 + 100) % 360 + ' , 100%, 50%, .7)'
 		});
 
 	// ------------------------ MAKE MOUNTAIN TITLE TEXT ------------------------
 	var YSHIFT = (WINDOWHEIGHT-200)/data.length;
-	var FONT_SIZE=8
+	var FONT_SIZE=5
 	var text = svg.selectAll('text')
 		.data(data)
 		.enter()
 		.append('text')
-		.text(function(d) {
-			return d.name
-		})
+		.text(function(d){ return d.name; })
+		.on("mouseover", function(){d3.select(this).text( function(d){ return describe( d ); }) })
+		.on("mouseout",  function(){d3.select(this).text( function(d){ return d.name; }) })
 		.attr('x', function(d, i) {
 			var halfwidth = (d.skiableAcres / d.vertical) * WIDTHSCALE;
-			return XSCALE * i + Math.max(10,halfwidth - FONT_SIZE*d.name.length)
+			return XSCALE * i + Math.max(20,halfwidth - FONT_SIZE*d.name.length)
 		})
-		// each label will be YSHIFT below the last to avoid stacking
-		.attr('y', function(d) {
-			return YHEIGHT -5
-		})
-		// css stuff...
+		.attr('y', function(d) { return YHEIGHT - 8 })
 		.attr('font-family', 'Open Sans')
 		.style('text-transform', 'uppercase')
 		.style('border-bottom', '1px solid #fff')
 		.style('letter-spacing', '2px')
 		.style('font-size', '13px')
 		.attr('fill', '#fff')
-		// text-anchor values can be 'start', 'middle', or 'end'
 		.style('text-anchor', 'start')
-		// ------ ROTATE TEXT ABOUT CORRECT ORIGIN ------
-		// d3 rotation syntax: rotate(angle in degrees, x position in px, y position in px)
 		.attr('transform', function(d,i) {
 			var halfwidth = (d.skiableAcres / d.vertical) * WIDTHSCALE;
 			var height = d.vertical * HEIGHTSCALE;
@@ -264,104 +259,78 @@ function render(sortby, state) {
 	
 
 	// ------------------------ DISPLAY SKI AREA INFO (on hover) ------------------------
-	var infoBox = d3.select('body')
-		.selectAll('.info')
-		.data(data)
-		.enter()
-		.append('p')
-		.attr('class', 'info')
-		.attr('style', function(d, i) {
-			// console.log(XSCALE, i)
-			return 'left: ' + (XSCALE * i + XSCALE/2) + 'px; top: ' + d.points[2].y + 'px;'
-		})
-		.html(function(d) {
-			// console.log(d)
-			return 'Yearly snowfall: ' + d.yearlySnowfall + ' inches<br>Skiable acres: ' + d.skiableAcres 
-		})
+	// var infoBox = d3.select('body')
+	// 	.selectAll('.info')
+	// 	.data(data)
+	// 	.enter()
+	// 	.append('p')
+	// 	.attr('class', 'info')
+	// 	.attr('style', function(d, i) {
+	// 		// console.log(XSCALE, i)
+	// 		return 'left: ' + (XSCALE * i + XSCALE/2) + 'px; top: ' + d.points[2].y + 'px;'
+	// 	})
+	// 	.html(function(d) {
+	// 		// console.log(d)
+	// 		return 'Yearly snowfall: ' + d.yearlySnowfall + ' inches<br>Skiable acres: ' + d.skiableAcres 
+	// 	})
 
 
 	// ------------------------ MAKE SNOW FALL! ------------------------
 	var interval = 8000;
-if(SNOWING){
-	// for each mountain...
-	setInterval(function() {
-		for (var j=0, len=data.length; j<len; j++) {
 
-			// `break;` is useful for debugging, since snowfall makes it hard to inspect elements on the page
-			// break;
+	if(SNOWING){
+		// for each mountain...
+		setInterval(function() {
+			for (var j=0, len=data.length; j<len; j++) {
 
-			// --- SNOWFLAKE CONSTRUCTOR (kinda) ---
-			//     makes circles with...
-			// 	- class 'snow'
-			// 	- random radius between 5 and 15
-			// 	- random x-coordinate (within mtn width)
-
-				var snowflake = svg.selectAll('.snow')
+					svg.selectAll('.snow')
 					.select('.snow')
-					// data creates 2 response variables that are passed into all callback functions
 					.data(data[j].snowfall)
-					.enter()
-					.append('circle')
-					.attr('class', 'snow')
-					.attr('fill', 'white')
+					.enter().append('circle')
+					.attr('class', 'snow').attr('fill', 'white')
 					.attr('r', function(d) {
 						var x = Math.random();
 						// radius is usually a random number between 3 and 6
 						if (x > 0.02) {
 							return Math.round(Math.random()*3+2)
 						}
-						// rarely...
 						else if (x > .0005 ) {
 							return 7
 						}
 						else if (x > .000005) {
 							return 10
 						}
-						else if (x > .0000001) {
-							return 15
-						}
-						// snow can start sooner w/o big flakes... :(
-						// else {
-						// 	// 1 in 10000000 snowflakes... 
-						// 	return 600
-						// }
+						else return 15
 					})
 					.attr('cx', function() {
-						// snow falls at any random x-value within its mountain's width
 						var width = (2*XSCALE * data[j].skiableAcres)/data[j].vertical;
-						var randomWidth = (Math.random()+Math.random()+Math.random()+Math.random()+Math.random()+Math.random()-3)*width/6; // random in range (-width/2,width/2) 
+						var randomWidth = width*(Math.random()+Math.random()+Math.random()+Math.random()+Math.random()+Math.random()-3)/6; 
 						var mountainTop = j*XSCALE + width/2; 
-						return (mountainTop + SNOWBANDWIDTH*randomWidth);
+						return mountainTop + SNOWBANDWIDTH*randomWidth;
 					})
-					// start snow offscreen
-					.attr('cy', '-40')
+					.attr('cy', '0')
 					.style('opacity', function() {
 						return Math.random();
 					})
 					.transition()
 					.ease('linear')
 					.duration(interval)
-					// d represents the first data response variable (data value at i)
-					// i represents the 2nd data response variable (iteration/index)
 					.delay(function(d, i) {
 						return i*Math.random() * interval * 1.5 / data[j].snowfall.length
 					})
 					.style('opacity', '0')
-					// position at end of animation
 					.attr('cy', function() {
 						return 0.9*SVG_HEIGHT
 					})
-					// because snowflakes are created on an interval,
-					// remove them at the end of their animation to free up memory
 					.each('end', function() {
 						this.remove()
 					})
-
-		}
-	}, interval/2)
-}
+			}
+		}, interval/2)
+	} // <-- end SNOW_ON conditional
 } // <-- end render()
 
+var SNOWING = true;
 var currentState = 'California';
 var currentSortBy = 'awesome';
 var currentTimeZone = 'PST';
@@ -413,13 +382,11 @@ $(function() {
 		render(currentSortBy, currentState)
 	});
 
+	window.onblur = function(){console.log("blurred"); SNOWING=false;render(currentSortBy, currentState);}
+	window.onfocus = function(){console.log('focused'); SNOWING=true; render(currentSortBy, currentState);}
+
 	setTimeZone();
-
-window.onblur = function(){console.log("blurred"); SNOWING=false;render(currentSortBy, currentState);}
-window.onfocus = function(){console.log('focused'); SNOWING=true; render(currentSortBy, currentState);}
-
 });
 
 
-	var SNOWING = true;
 
